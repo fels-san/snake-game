@@ -3,89 +3,117 @@ import { Snake } from "./snake.js";
 const gameBoard = document.querySelector(".game-board");
 const scoreElement = document.querySelector(".score");
 const stopwatchElement = document.querySelector(".time");
+const endScreenElement = document.querySelector(".end-screen");
+const restartButton = document.querySelector(".restart-btn");
 
-let startBlockDirection = "up";
-let lastDirection = null;
+const BOARD_WIDTH = 12;
+const BOARD_HEIGHT = 13;
+const TOTAL_CELLS = BOARD_WIDTH * BOARD_HEIGHT;
+const MOVE_INTERVAL = 300;
+
 let elements = [];
-let score = 0;
+let score;
 let timer;
+let stopwatch;
 
-for (let i = 1; i <= 12 * 13; i++) {
+for (let i = 1; i <= TOTAL_CELLS; i++) {
   const divElement = document.createElement("div");
   gameBoard.appendChild(divElement);
   elements.push(divElement);
 }
 
+function startGame() {
+  score = 0;
+  stopwatchElement.innerText = "00:00:00";
+
+  initializeSnake();
+  apple.reposition();
+
+  timer = setInterval(() => {
+    moveSnake();
+  }, MOVE_INTERVAL);
+  updateTime();
+}
+
 class Apple {
   constructor() {
-    this.index = Math.floor(Math.random() * elements.length);
+    this.reposition();
+  }
+
+  reposition() {
+    this.index = this.getRandomIndex();
+    while (snake.blockIndices.has(this.index)) {
+      this.index = this.getRandomIndex();
+    }
+    this.element?.classList.remove("apple");
     this.element = elements[this.index];
     this.element.classList.add("apple");
   }
+
+  getRandomIndex() {
+    return Math.floor(Math.random() * TOTAL_CELLS);
+  }
+}
+
+function updateScore() {
+  score++;
+  scoreElement.innerText = `Score: ${score}`;
+}
+
+function updateTime() {
+  let totalSeconds = 0;
+
+  stopwatch = setInterval(() => {
+    totalSeconds++;
+    stopwatchElement.innerText = formatTime(totalSeconds);
+  }, 1000);
+}
+
+function formatTime(seconds) {
+  let hours = Math.floor(seconds / 3600);
+  let minutes = Math.floor((seconds % 3600) / 60);
+  seconds = seconds % 60;
+  return `${hours.toString().padStart(2, "0")}:${minutes
+    .toString()
+    .padStart(2, "0")}:${seconds.toString().padStart(2, "0")}`;
 }
 
 document.addEventListener("keydown", (event) => {
-  switch (event.key) {
-    case "ArrowUp":
-      if (snake.direction == "down") return;
-      break;
-    case "ArrowDown":
-      if (snake.direction == "up") return;
-      break;
-    case "ArrowLeft":
-      if (snake.direction == "right") return;
-      break;
-    case "ArrowRight":
-      if (snake.direction == "left") return;
-      break;
+  const oppositeDirections = {
+    ArrowUp: "down",
+    ArrowDown: "up",
+    ArrowLeft: "right",
+    ArrowRight: "left",
+  };
+  if (snake.direction !== oppositeDirections[event.key]) {
+    snake.direction = event.key.slice(5).toLowerCase();
   }
-  snake.direction =
-    event.key.toString().slice(5, 6).toLowerCase() +
-    event.key.toString().slice(6);
 });
 
-function moveSnake(direction) {
+const snake = new Snake();
+let apple = new Apple();
+
+function moveSnake() {
   let newIndex;
-  switch (direction) {
+  switch (snake.direction) {
     case "up":
-      if (snake.direction == "down") return; // добавить проверку как-то по вопросу того, не новое ли это направление
-      newIndex = snake.head.index - 12;
-      if (newIndex < 0) {
-        endGame();
-        return;
-      }
-      snake.direction = "up";
+      newIndex = snake.head.index - BOARD_WIDTH;
       break;
     case "down":
-      if (snake.direction == "up") return;
-      newIndex = snake.head.index + 12;
-      if (newIndex > 12 * 13 - 1) {
-        endGame();
-        return;
-      }
-      snake.direction = "down";
+      newIndex = snake.head.index + BOARD_WIDTH;
       break;
     case "left":
-      if (snake.direction == "right") return;
       newIndex = snake.head.index - 1;
-      if (newIndex < snake.head.index - (snake.head.index % 12)) {
-        endGame();
-        return;
-      }
-      snake.direction = "left";
       break;
     case "right":
-      if (snake.direction == "left") return;
       newIndex = snake.head.index + 1;
-      if (newIndex >= snake.head.index + (12 - (snake.head.index % 12))) {
-        endGame();
-        return;
-      }
-      snake.direction = "right";
       break;
   }
 
-  if (snake.blockIndices.has(newIndex)) {
+  if (
+    isOutOfBounds(newIndex, snake.direction) ||
+    snake.blockIndices.has(newIndex)
+  ) {
     endGame();
     return;
   }
@@ -94,57 +122,48 @@ function moveSnake(direction) {
   let deleted = snake.deleteTail();
 
   if (snake.head.index == apple.index) {
-    apple.element.classList.remove("apple");
-    apple = new Apple();
-
+    apple.reposition();
     snake.append(deleted.element, deleted.index);
     updateScore();
   }
 }
 
+function isOutOfBounds(index, direction) {
+  switch (direction) {
+    case "up":
+      return index < 0;
+    case "down":
+      return index >= TOTAL_CELLS;
+    case "left":
+      return (index + 1) % BOARD_WIDTH === 0;
+    case "right":
+      return index % BOARD_WIDTH === 0;
+    default:
+      return false;
+  }
+}
+
 function endGame() {
   clearInterval(timer);
-  alert("Stop!");
+  clearInterval(stopwatch);
+  endScreenElement.classList.remove("hide");
 }
 
-function updateScore() {
-  score++;
-  scoreElement.innerText = `Score: ${score}`;
+function initializeSnake() {
+  let startIndex = Math.floor(TOTAL_CELLS / 2) + 2;
+  snake.append(elements[startIndex], startIndex);
+  snake.append(elements[startIndex + 1], startIndex + 1);
+  snake.append(elements[startIndex + 2], startIndex + 2);
 }
 
-let seconds = 0;
-let minutes = 0;
-let hours = 0;
+restartButton.addEventListener("click", restartGame);
 
-function updateTime() {
-  seconds++;
-  if (seconds > 59) {
-    seconds = 0;
-    minutes++;
-  }
-  if (minutes > 59) {
-    minutes = 0;
-    seconds = 0;
-    hours++;
-  }
-  stopwatchElement.innerText = `${hours.toString().padStart(2, "0")}:${minutes
-    .toString()
-    .padStart(2, "0")}:${seconds.toString().padStart(2, "0")}`;
+function restartGame() {
+  snake.delete();
+  snake.direction = "left";
+  apple.reposition();
+  endScreenElement.classList.add("hide");
+  startGame();
 }
-
-const snake = new Snake();
-let randomIndex = Math.floor(Math.random() * elements.length);
-snake.append(elements[randomIndex], randomIndex);
-snake.append(elements[randomIndex + 1], randomIndex + 1);
-snake.append(elements[randomIndex + 2], randomIndex + 2);
-
-let apple = new Apple();
 
 startGame();
-
-function startGame() {
-  timer = setInterval(() => {
-    moveSnake(snake.direction);
-    updateTime();
-  }, 1000);
-}

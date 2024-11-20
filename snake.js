@@ -91,4 +91,11 @@ export class Snake {
     this.blockIndices.delete(deletedHead.index);
     return deletedHead;
   }
+
+  delete() {
+    while (this.head) {
+      this.deleteTail();
+    }
+    return this;
+  }
 }
