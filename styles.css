@@ -9,8 +9,62 @@ body {
   margin: 0;
   padding: 0;
   min-height: 100vh;
+  width: 100vw;
   display: flex;
-  align-items: center;
   justify-content: center;
-  background: #e0e3eb;
+  align-items: center;
+  /* background: #202020; */
+  background-color: #b9b4ac;
+}
+
+.container {
+  display: flex;
+  flex-direction: column;
+  width: 490px;
+  height: 85vh;
+  border-radius: 20px;
+  background: white;
+  box-shadow: 37px 27px 45px 0px #6c8ba1;
+  overflow: hidden;
+}
+
+.game-info {
+  background-color: #feeed4;
+  height: 40px;
+  border-bottom: 3px solid #6c8ba1;
+  box-shadow: 0px 0px 12px 4px #6c8ba1;
+  z-index: 10;
+  padding: 10px 25px;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+}
+
+.game-board {
+  display: grid;
+  grid-template-columns: repeat(12, 1fr);
+  grid-template-rows: repeat(13, 1fr);
+  background-color: #f4e2c4;
+  flex-grow: 1;
+}
+
+.game-board > div {
+  border: 1px dashed #6c8ba1;
+}
+
+div .snake-block {
+  /*background: linear-gradient(to bottom right, #ecedb5, #c3e9bc 50%, #90dfc7);*/
+  background: linear-gradient(to bottom right, #fef4cc, #d4f389 50%, #85c499);
+  border: 1px solid #4e7f73;
+  box-shadow: 12px 6px 9px 1px #6c8ba1;
+}
+
+div .snake-block.head {
+  background: linear-gradient(to bottom right, #fef4cc, #d4f389 50%, #85c499);
+}
+
+div .apple {
+  background: linear-gradient(to bottom right, #f9ff8c, #f48134 50%, #e94630);
+  border: 2px solid #8e0606;
+  box-shadow: 12px 6px 9px 1px #6c8ba1;
 }
