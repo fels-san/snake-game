@@ -41,7 +41,8 @@ body {
 }
 
 .time,
-.score {
+.score,
+.high-score {
   color: #005897;
   font-weight: 600;
 }

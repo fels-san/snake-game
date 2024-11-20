@@ -2,6 +2,7 @@ import { Snake } from "./snake.js";
 
 const gameBoard = document.querySelector(".game-board");
 const scoreElement = document.querySelector(".score");
+const highScoreElement = document.querySelector(".high-score");
 const stopwatchElement = document.querySelector(".time");
 const endScreenElement = document.querySelector(".end-screen");
 const restartButton = document.querySelector(".restart-btn");
@@ -12,6 +13,7 @@ const TOTAL_CELLS = BOARD_WIDTH * BOARD_HEIGHT;
 const MOVE_INTERVAL = 300;
 
 let elements = [];
+let highScore;
 let score;
 let timer;
 let stopwatch;
@@ -24,6 +26,10 @@ for (let i = 1; i <= TOTAL_CELLS; i++) {
 
 function startGame() {
   score = 0;
+  if (!localStorage.getItem("score")) {
+    localStorage.setItem("score", "0");
+  }
+  highScoreElement.innerText = `High score: ${localStorage.getItem("score")}`;
   stopwatchElement.innerText = "00:00:00";
 
   initializeSnake();
@@ -146,6 +152,10 @@ function isOutOfBounds(index, direction) {
 function endGame() {
   clearInterval(timer);
   clearInterval(stopwatch);
+  if (score > localStorage.getItem("score")) {
+    localStorage.setItem("score", score);
+  }
+  highScoreElement.innerText = `High score: ${localStorage.getItem("score")}`;
   endScreenElement.classList.remove("hide");
 }
 
