@@ -10,9 +10,10 @@ const restartButton = document.querySelector(".restart-btn");
 const BOARD_WIDTH = 12;
 const BOARD_HEIGHT = 13;
 const TOTAL_CELLS = BOARD_WIDTH * BOARD_HEIGHT;
-const MOVE_INTERVAL = 300;
+const MOVE_INTERVAL = 200;
 
 let elements = [];
+let nextDirections = [];
 let highScore;
 let score;
 let timer;
@@ -86,13 +87,15 @@ function formatTime(seconds) {
 
 document.addEventListener("keydown", (event) => {
   const oppositeDirections = {
-    ArrowUp: "down",
-    ArrowDown: "up",
-    ArrowLeft: "right",
-    ArrowRight: "left",
+    "up": "down",
+    "down": "up",
+    "left": "right",
+    "right": "left",
   };
-  if (snake.direction !== oppositeDirections[event.key]) {
-    snake.direction = event.key.slice(5).toLowerCase();
+
+  let newDirection = event.key.slice(5).toLowerCase();
+  if (snake.direction !== oppositeDirections[newDirection]) {
+    nextDirections.push(newDirection);
   }
 });
 
@@ -100,6 +103,10 @@ const snake = new Snake();
 let apple = new Apple();
 
 function moveSnake() {
+  if (nextDirections.length > 0) {
+    snake.direction = nextDirections.shift();
+  }
+
   let newIndex;
   switch (snake.direction) {
     case "up":
@@ -169,6 +176,7 @@ function initializeSnake() {
 restartButton.addEventListener("click", restartGame);
 
 function restartGame() {
+  nextDirections = [];
   snake.delete();
   snake.direction = "left";
   apple.reposition();
