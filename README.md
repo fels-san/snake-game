@@ -1,6 +1,6 @@
 # Snake Game
 
-A simple and fun Snake game built with **Vanilla TypeScript**, **HTML**, and **CSS**. The game includes a classic snake gameplay with a scoring system and high score tracking stored in localStorage.
+A simple Snake game built with **Vanilla TypeScript**, **HTML**, and **CSS**. The game includes a classic snake gameplay with a scoring system and high score tracking stored in localStorage.
 
 🔗 **Live Demo**: https://fels-san.github.io/snake-game/
 
