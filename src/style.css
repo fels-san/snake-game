@@ -78,7 +78,8 @@ div .apple {
   box-shadow: 12px 6px 9px 1px #6c8ba1;
 }
 
-.end-screen {
+.end-screen,
+.start-screen {
   width: 100%;
   height: 100%;
   position: absolute;
@@ -108,7 +109,8 @@ div .apple {
   position: relative;
 }
 
-.restart-btn {
+.restart-btn,
+.start-btn {
   z-index: 10;
   margin-top: 20px;
   padding: 10px 20px;
@@ -124,7 +126,8 @@ div .apple {
   border: 4px solid #005897;
 }
 
-.restart-btn:hover {
+.restart-btn:hover,
+.start-btn:hover {
   font-size: 19px;
 }
 

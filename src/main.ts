@@ -12,8 +12,14 @@ const stopwatchElement = document.querySelector(".time") as HTMLSpanElement;
 const endScreenElement = document.querySelector(
   ".end-screen"
 ) as HTMLDivElement;
+const startScreenElement = document.querySelector(
+  ".start-screen"
+) as HTMLDivElement;
 const restartButton = document.querySelector(
   ".restart-btn"
+) as HTMLButtonElement;
+const startButton = document.querySelector(
+  ".start-btn"
 ) as HTMLButtonElement;
 
 const BOARD_WIDTH = 12;
@@ -35,6 +41,7 @@ for (let i = 1; i <= TOTAL_CELLS; i++) {
 }
 
 function startGame(): void {
+  startScreenElement.classList.add("hide");
   gameOver = false;
   score = 0;
   if (!localStorage.getItem("score")) {
@@ -205,4 +212,6 @@ function restartGame() {
   startGame();
 }
 
-startGame();
+startButton.addEventListener("click", startGame);
+
+// startGame();
