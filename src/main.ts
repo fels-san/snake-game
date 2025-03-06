@@ -1,4 +1,4 @@
-import './style.css'
+import "./style.css";
 import { Snake } from "./snake";
 
 type Direction = "up" | "down" | "left" | "right";
@@ -26,6 +26,7 @@ let nextDirections: Direction[] = [];
 let score: number;
 let timer: ReturnType<typeof setInterval>;
 let stopwatch: ReturnType<typeof setInterval>;
+let gameOver = false;
 
 for (let i = 1; i <= TOTAL_CELLS; i++) {
   const divElement = document.createElement("div");
@@ -34,6 +35,7 @@ for (let i = 1; i <= TOTAL_CELLS; i++) {
 }
 
 function startGame(): void {
+  gameOver = false;
   score = 0;
   if (!localStorage.getItem("score")) {
     localStorage.setItem("score", "0");
@@ -97,6 +99,10 @@ function formatTime(seconds: number): string {
 }
 
 document.addEventListener("keydown", (event: KeyboardEvent): void => {
+  if ((event.key === " " || event.key === "Enter") && gameOver) {
+    restartGame();
+  }
+
   const oppositeDirections: { [key in Direction]: Direction } = {
     up: "down",
     down: "up",
@@ -171,6 +177,7 @@ function isOutOfBounds(index: number, direction: Direction) {
 }
 
 function endGame() {
+  gameOver = true;
   clearInterval(timer);
   clearInterval(stopwatch);
   if (score > +localStorage.getItem("score")!) {
@@ -199,4 +206,3 @@ function restartGame() {
 }
 
 startGame();
-
